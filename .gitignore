@@ -1,0 +1,15 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Build / binaries
+build/
+bin/
+
+# MATLAB autosaves
+*.asv
+*.m~
+
+# Data and generated outputs
+data/*.wav
+results/*

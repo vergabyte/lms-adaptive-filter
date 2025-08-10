@@ -1,0 +1,21 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build C targets
+        run: |
+          make -C c_lms
+      - name: Smoke test (synthetic convergence)
+        run: |
+          ./c_lms/bin/lms_synthetic --order 21 --beta 0.01 --nsamples 1500 --out results/
+          python - << 'PY'
+import pathlib, math
+e = [float(s) for s in pathlib.Path('results/ERROR.txt').read_text().split()]
+n=len(e); q=n//4
+first=sum(x*x for x in e[:q])/q; last=sum(x*x for x in e[-q:])/q
+print("MSE first:", first, "last:", last, "ratio:", last/first)
+assert last/first < 0.2, "Convergence check failed"
+PY
